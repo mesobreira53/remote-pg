@@ -38,8 +38,9 @@ func (p PGOperator) reconcile(ctx context.Context) {
 			if err != nil {
 				fmt.Println("Error Checking pg instances: ", err)
 			}
-			time.Sleep(2 * time.Second)
+
 		}
+		time.Sleep(2 * time.Second)
 	}
 }
 
