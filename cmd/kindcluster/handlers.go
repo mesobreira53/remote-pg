@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"remote-ssh/pgdocker"
-	zfs "remote-ssh/zfs"
+	"remote-ssh/pkg/pgdocker"
+	zfs "remote-ssh/pkg/zfs"
 )
 
 type application struct {
