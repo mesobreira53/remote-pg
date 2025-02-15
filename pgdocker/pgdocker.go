@@ -4,15 +4,16 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"os"
+	"math/big"
 	"os/exec"
 )
 
 // User to create a postgres docker container
-type PGSContainer struct{}
+type PGSContainer struct {
+}
 
 type PGServer interface {
-	CreatePGServer(pg_name string, pg_version string, pg_datadir string) error
+	CreatePGServer(pg_name string, pg_version string, pg_datadir string) (pg_pass string, pg_port string, err error)
 	DestroyPGServer(pg_name string) error
 }
 
@@ -34,19 +35,14 @@ func generateRandomString(n int) (string, error) {
 func (pg PGSContainer) DestroyPGServer(pg_name string) error {
 	fmt.Println("Destroying postgres docker container", pg_name, "...")
 	cmd_line := fmt.Sprintf("docker stop %s", pg_name)
-	fmt.Println("Command:", cmd_line)
-	cmd := exec.Command(cmd_line)
-	// Set output to OS stdout/stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd := exec.Command("sh", "-c", cmd_line)
 	// Execute command
 	err := cmd.Run()
 	if err != nil {
 		return err
 	}
 	cmd_line = fmt.Sprintf("docker rm -f %s", pg_name)
-	fmt.Println("Command:", cmd_line)
-	cmd = exec.Command(cmd_line)
+	cmd = exec.Command("sh", "-c", cmd_line)
 	// Execute command
 	err = cmd.Run()
 	if err != nil {
@@ -55,17 +51,22 @@ func (pg PGSContainer) DestroyPGServer(pg_name string) error {
 	return nil
 }
 
-func (pg PGSContainer) CreatePGServer(pg_name string, pg_version string, pg_datadir string) error {
-	pg_pass, err := generateRandomString(20)
+func (pg PGSContainer) CreatePGServer(pg_name string, pg_version string, pg_datadir string) (pg_pass string, pg_port string, err error) {
+	pg_pass, err = generateRandomString(20)
 	if err != nil {
-		return err
+		return "", "", err
 	}
-	cmd_line := fmt.Sprintf("docker run -d --name %s -e POSTGRES_PASSWORD=%s -d -p 15432:5432 --restart=always -v %s:/var/lib/postgresql/data  postgres:%s", pg_name, pg_pass, pg_datadir, pg_version)
+	random_port, err := rand.Int(rand.Reader, big.NewInt(10000))
+	if err != nil {
+		return "", "", err
+	}
+	pg_port = random_port.Add(random_port, big.NewInt(5433)).String()
+	cmd_line := fmt.Sprintf("docker run -d --name %s -e POSTGRES_PASSWORD=%s -d -p %s:5432 --restart=always -v %s:/var/lib/postgresql/data  postgres:%s", pg_name, pg_pass, pg_port, pg_datadir, pg_version)
 	cmd := exec.Command("sh", "-c", cmd_line)
 	// Execute command
 	err = cmd.Run()
 	if err != nil {
-		return err
+		return "", "", err
 	}
-	return nil
+	return pg_pass, pg_port, nil
 }

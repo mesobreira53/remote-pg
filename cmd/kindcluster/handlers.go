@@ -46,11 +46,11 @@ func (app *application) pg_create(w http.ResponseWriter, r *http.Request) {
 	pg_name := r.URL.Query().Get("pg_name")
 	pg_version := r.URL.Query().Get("pg_version")
 	pg_datadir := r.URL.Query().Get("pg_datadir")
-	err := app.pgdock.CreatePGServer(pg_name, pg_version, pg_datadir)
+	pg_pass, pg_port, err := app.pgdock.CreatePGServer(pg_name, pg_version, pg_datadir)
 	if err != nil {
 		app.serverError(w, r, err)
 	} else {
-		app.logger.Info("Postgres container created successfully")
+		app.logger.Info("Postgres container created successfully", "pass: ", pg_pass, "port:", pg_port)
 		w.WriteHeader(http.StatusOK)
 	}
 }

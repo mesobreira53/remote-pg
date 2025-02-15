@@ -1,0 +1,8 @@
+{
+    "port": 25432,
+    "database": {
+      "user": "pg_proxy",
+      "password": "pg_proxy_pass",
+      "host": "192.168.1.205"
+    }
+}
