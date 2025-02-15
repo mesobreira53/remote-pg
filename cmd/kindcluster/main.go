@@ -22,7 +22,10 @@ func main() {
 	// Create a new application
 	app := newApplication("zpool")
 
-	op := NewPGOperator("192.168.1.205")
+	op, err := NewPGOperator("persistence.db")
+	if err != nil {
+		app.logger.Error("Cannot create PG Operator")
+	}
 
 	go op.reconcile(ctx)
 

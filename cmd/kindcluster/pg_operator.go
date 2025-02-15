@@ -17,8 +17,13 @@ type Operator interface {
 	check() error
 }
 
-func NewPGOperator(db_name string) PGOperator {
-	return PGOperator{storage: persistence.NewSQLStorage(db_name)}
+func NewPGOperator(db_name string) (*PGOperator, error) {
+	p := PGOperator{storage: persistence.NewSQLStorage(db_name)}
+	err := p.storage.Init_instance_db()
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
 
 // reconcileLoop simulates a reconcile function running in a separate goroutine.
@@ -39,7 +44,6 @@ func (p PGOperator) reconcile(ctx context.Context) {
 }
 
 func (p PGOperator) check() error {
-	p.storage.Init_instance_db("pg_instance")
 	instanceMap, err := p.storage.Read_all_pg_instance()
 	if err != nil {
 		return err

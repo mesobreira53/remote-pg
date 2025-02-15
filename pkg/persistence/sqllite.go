@@ -12,7 +12,7 @@ type sql_storage struct {
 }
 
 type Storage interface {
-	Init_instance_db(table_name string) error
+	Init_instance_db() error
 	Save_pg_intance(pg_name string, pg_port int) error
 	Read_all_pg_instance() (map[string]int, error)
 	Check_pg_instance(pg_name string) (bool, error)
@@ -22,7 +22,7 @@ func NewSQLStorage(db_name string) sql_storage {
 	return sql_storage{db_name: db_name}
 }
 
-func (s sql_storage) Init_instance_db(table_name string) error {
+func (s sql_storage) Init_instance_db() error {
 	// Open SQLite database (creates if not exists)
 	db, err := sql.Open("sqlite3", s.db_name)
 	if err != nil {
@@ -31,13 +31,13 @@ func (s sql_storage) Init_instance_db(table_name string) error {
 	defer db.Close()
 
 	// Create table
-	sqlStmt := fmt.Sprintf(`
-	CREATE TABLE IF NOT EXISTS %s (
+	sqlStmt := `
+	CREATE TABLE IF NOT EXISTS pg_dbs (
 		pg_id INTEGER PRIMARY KEY AUTOINCREMENT,
 		pg_name TEXT NOT NULL,
-		pg_port INT NOT NULL,
+		pg_port INT NOT NULL
 	);
-	`, table_name)
+	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		return err
