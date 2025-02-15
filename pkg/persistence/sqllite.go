@@ -72,7 +72,7 @@ func (s sql_storage) Delete_pg_instance(pg_name string) (int64, error) {
 		return -1, err
 	}
 	defer db.Close()
-	rows, err := db.Exec("DELETE FROM users WHERE name = ?", pg_name)
+	rows, err := db.Exec("DELETE FROM pg_instance WHERE pg_name = ?", pg_name)
 	if err != nil {
 		return -1, err
 	}
