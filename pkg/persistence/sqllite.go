@@ -16,6 +16,7 @@ type Storage interface {
 	Save_pg_intance(pg_name string, pg_port int) error
 	Read_all_pg_instance() (map[string]int, error)
 	Check_pg_instance(pg_name string) (bool, error)
+	Delete_pg_instance(pg_name string) error
 }
 
 func NewSQLStorage(db_name string) sql_storage {
@@ -62,6 +63,21 @@ func (s sql_storage) Save_pg_intance(pg_name string, pg_port int) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (s sql_storage) Delete_pg_instance(pg_name string) error {
+	db, err := sql.Open("sqlite3", s.db_name)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	query := fmt.Sprintf("DELETE FROM pg_instance WHERE pg_name = '%s'", pg_name)
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
 	return nil
 }
 

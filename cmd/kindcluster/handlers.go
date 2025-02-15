@@ -53,6 +53,7 @@ func (app *application) pg_destroy(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.serverError(w, r, err)
 	} else {
+		app.storage.Delete_pg_instance(pg_name)
 		w.WriteHeader(http.StatusOK)
 	}
 }
