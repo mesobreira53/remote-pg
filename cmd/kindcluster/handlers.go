@@ -42,6 +42,16 @@ func (app *application) zfs_vol_create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *application) pg_destroy(w http.ResponseWriter, r *http.Request) {
+	pg_name := r.URL.Query().Get("pg_name")
+	err := app.pgdock.DestroyPGServer(pg_name)
+	if err != nil {
+		app.serverError(w, r, err)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func (app *application) pg_create(w http.ResponseWriter, r *http.Request) {
 	pg_name := r.URL.Query().Get("pg_name")
 	pg_version := r.URL.Query().Get("pg_version")

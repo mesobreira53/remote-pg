@@ -13,5 +13,6 @@ func (app application) routes() *http.ServeMux {
 	mux.HandleFunc("GET /{$}", app.app_home)
 	mux.HandleFunc("POST /zfs_create", app.zfs_vol_create)
 	mux.HandleFunc("POST /pg_create", app.pg_create)
+	mux.HandleFunc("POST /pg_destroy", app.pg_destroy)
 	return mux
 }
