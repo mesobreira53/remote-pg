@@ -50,6 +50,7 @@ func (app *application) pg_create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.serverError(w, r, err)
 	} else {
+		app.logger.Info("Postgres container created successfully")
 		w.WriteHeader(http.StatusOK)
 	}
 }

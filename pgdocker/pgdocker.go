@@ -61,10 +61,7 @@ func (pg PGSContainer) CreatePGServer(pg_name string, pg_version string, pg_data
 		return err
 	}
 	cmd_line := fmt.Sprintf("docker run -d --name %s -e POSTGRES_PASSWORD=%s -d -p 15432:5432 --restart=always -v %s:/var/lib/postgresql/data  postgres:%s", pg_name, pg_pass, pg_datadir, pg_version)
-	cmd := exec.Command(cmd_line)
-	// Set output to OS stdout/stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd := exec.Command("sh", "-c", cmd_line)
 	// Execute command
 	err = cmd.Run()
 	if err != nil {
