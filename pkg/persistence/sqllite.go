@@ -32,7 +32,7 @@ func (s sql_storage) Init_instance_db() error {
 
 	// Create table
 	sqlStmt := `
-	CREATE TABLE IF NOT EXISTS pg_dbs (
+	CREATE TABLE IF NOT EXISTS pg_instance (
 		pg_id INTEGER PRIMARY KEY AUTOINCREMENT,
 		pg_name TEXT NOT NULL,
 		pg_port INT NOT NULL
